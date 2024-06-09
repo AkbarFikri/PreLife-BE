@@ -11,7 +11,7 @@ func (m *Middleware) AuthJWT() gin.HandlerFunc {
 			c.AbortWithStatusJSON(401, gin.H{
 				"code": 401,
 			})
-			m.log.Warnf("request without authorization header detected : %v access to route %s", c.ClientIP(), c.Request.RequestURI)
+			m.log.Warnf("request without authorization header detected : %v access to route %s", c.Request.RemoteAddr, c.Request.RequestURI)
 			return
 		}
 
@@ -19,7 +19,7 @@ func (m *Middleware) AuthJWT() gin.HandlerFunc {
 			c.AbortWithStatusJSON(401, gin.H{
 				"code": 401,
 			})
-			m.log.Warnf("request without authorization header detected : %v access to route %s", c.ClientIP(), c.Request.RequestURI)
+			m.log.Warnf("request without authorization header detected : %v access to route %s", c.Request.RemoteAddr, c.Request.RequestURI)
 			return
 		}
 

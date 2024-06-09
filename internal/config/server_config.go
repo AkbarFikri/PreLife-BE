@@ -59,6 +59,7 @@ func (s *Server) SetupRoute() {
 	})
 
 	s.app.Use(gin.Logger())
+	s.app.Use(middleware.CORSMiddleware())
 
 	for _, h := range s.handlers {
 		h.Endpoints(s.app.Group("/api/v1"))
