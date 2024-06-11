@@ -1,0 +1,27 @@
+name: 🎯 Build and deploy apps to server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - internal/
+      - cmd/
+      - Makefile
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd backend
+            make deploy
