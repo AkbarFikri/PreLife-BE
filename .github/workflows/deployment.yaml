@@ -24,4 +24,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd backend
+            git stash
+            echo "Start pulling from github repository...."
+            git pull origin main
             make deploy

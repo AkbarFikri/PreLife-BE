@@ -13,9 +13,6 @@ migrate_down:
 	migrate -database "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(SSL_MODE)" -path db/migrations down
 
 deploy:
-	git stash
-	echo "Start pulling from github repository...."
-	git pull origin main
 	echo "Start build golang executable file...."
     export PATH=$PATH:/usr/local/go/bin
 	go build -o main cmd/app/main.go
