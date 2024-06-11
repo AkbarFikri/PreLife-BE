@@ -37,7 +37,7 @@ jobs:
           cp ${{ github.workspace }}/api/docs.yaml ${{ github.workspace }}/app
           cp ${{ github.workspace }}/public/dummy-logo.png ${{ github.workspace }}/app
           echo "Replacing SwaggerUI URL to use local spec file instead"
-          sed -i 's/https:\/\/petstore.swagger.io\/v2\/swagger.json/.\/swagger.yaml/g' ${{ github.workspace }}/app/swagger-initializer.js
+          sed -i 's/https:\/\/petstore.swagger.io\/v2\/swagger.json/.\/docs.yaml/g' ${{ github.workspace }}/app/swagger-initializer.js
           echo "Replacing title and logo of the website"
           sed -i 's/<title>Swagger UI<\/title>/<title>Documentation - PreLife API<\/title>/g' ${{ github.workspace }}/app/index.html
           sed -i 's/href=".\/favicon-16x16.png"/href=".\/dummy-logo.png"/g' ${{ github.workspace }}/app/index.html
