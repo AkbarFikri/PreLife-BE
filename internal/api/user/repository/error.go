@@ -6,5 +6,5 @@ import (
 )
 
 var (
-	ErrorExecContext = NewError.NewError("Something when wrong when exec context", http.StatusInternalServerError)
+	ErrorExecContext = NewError.New("Something when wrong when exec context", http.StatusInternalServerError)
 )

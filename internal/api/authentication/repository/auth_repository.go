@@ -1,4 +1,4 @@
-package userRepository
+package authRepository
 
 import (
 	"github.com/AkbarFikri/PreLife-BE/internal/domain"
@@ -6,21 +6,21 @@ import (
 	"golang.org/x/net/context"
 )
 
-type UserRepository interface {
+type AuthRepository interface {
 	Save(ctx context.Context, user domain.User) error
-	FindUserByEmail(ctx context.Context, email string) (domain.User, error)
 	CountEmail(ctx context.Context, email string) (int, error)
+	FindUserByEmail(ctx context.Context, email string) (domain.User, error)
 }
 
-type userRepository struct {
+type authRepository struct {
 	db *sqlx.DB
 }
 
-func New(db *sqlx.DB) UserRepository {
-	return &userRepository{db}
+func New(db *sqlx.DB) AuthRepository {
+	return &authRepository{db}
 }
 
-func (r userRepository) Save(ctx context.Context, user domain.User) error {
+func (r *authRepository) Save(ctx context.Context, user domain.User) error {
 	arg := map[string]interface{}{
 		"id":            user.ID,
 		"email":         user.Email,
@@ -30,12 +30,12 @@ func (r userRepository) Save(ctx context.Context, user domain.User) error {
 
 	_, err := r.db.NamedExecContext(ctx, CreateUser, arg)
 	if err != nil {
-		return ErrorExecContext
+		return err
 	}
 	return nil
 }
 
-func (r userRepository) CountEmail(ctx context.Context, email string) (int, error) {
+func (r *authRepository) CountEmail(ctx context.Context, email string) (int, error) {
 	arg := map[string]interface{}{
 		"email": email,
 	}
@@ -58,7 +58,7 @@ func (r userRepository) CountEmail(ctx context.Context, email string) (int, erro
 	return count, nil
 }
 
-func (r userRepository) FindUserByEmail(ctx context.Context, email string) (domain.User, error) {
+func (r *authRepository) FindUserByEmail(ctx context.Context, email string) (domain.User, error) {
 	arg := map[string]interface{}{
 		"email": email,
 	}
