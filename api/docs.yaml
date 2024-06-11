@@ -3,7 +3,11 @@ info:
   title: PreLife
   description: Aplikasi berbasis deep learning untuk membantu ibu hamil dan ibu yang memiliki balita dalam mencegah stunting atau gangguan pertumbuhan pada anak di bawah 5 tahun. PreLife berguna untuk pelayanan publik khususnya dalam bidang kesehatan yang menargetkan ibu hamil dan ibu yang memiliki balita. Dengan hadirnya PreLife, PreLife diharapkan mampu menurunkan angka stunting dan angka kematian bayi yang belum lahir dengan cara meningkatkan angka deteksi dini indikasi stunting pada balita serta meningkatkan responsibilitas pelayanan kesehatan kepada masyarakat khususnya ibu hamil dan menyusui.
   version: 1.0.0
+  license:
+    name: MIT License
+    url: https://opensource.org/license/mit
 servers:
   - url: 'https://prelife.akbarfikri.site'
+
 paths:
   

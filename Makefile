@@ -14,9 +14,9 @@ migrate_down:
 
 deploy:
 	git stash
-	echo "Start pulling from github repository..."
+	echo "Start pulling from github repository...."
 	git pull origin main
-	echo "Start build golang executable file..."
+	echo "Start build golang executable file...."
 	go build -o main cmd/app/main.go
 	echo "Restart service..."
 	systemctl restart prelife.service
