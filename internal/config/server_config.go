@@ -1,6 +1,9 @@
 package config
 
 import (
+	authHandler "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/handler"
+	authRepository "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/repository"
+	authService "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/service"
 	userHandler "github.com/AkbarFikri/PreLife-BE/internal/api/user/handler"
 	userRepository "github.com/AkbarFikri/PreLife-BE/internal/api/user/repository"
 	userService "github.com/AkbarFikri/PreLife-BE/internal/api/user/service"
@@ -37,18 +40,17 @@ func NewServer(app *gin.Engine, firebaseApp *firebase2.FirebaseClient, log *logr
 
 	// Repository init
 	usRepository := userRepository.New(db)
+	atRepository := authRepository.New(db)
 
 	// Service init
-	usService := userService.New(usRepository, log)
+	usService := userService.New(usRepository, log, firebaseAuth)
+	atService := authService.New(atRepository, log, firebaseAuth)
 
 	// Handler init
+	atHandler := authHandler.New(atService)
 	usHandler := userHandler.New(mid, log, usService)
 
-	s.handlers = []Handler{usHandler}
-
-	if err := db.Ping(); err != nil {
-		panic(err)
-	}
+	s.handlers = []Handler{usHandler, atHandler}
 
 	return s
 }

@@ -1,15 +1,4 @@
-package userRepository
-
-const GetUserByEmail = `
-SELECT
-	id,
-	full_name,
-	email,
-	date_of_birth
-FROM
-	users
-WHERE
-    email = :email`
+package authRepository
 
 const CreateUser = `
 INSERT INTO
@@ -24,6 +13,16 @@ INSERT INTO
           :full_name,
           :date_of_birth
 )`
+
+const GetUserByEmail = `
+SELECT
+	id,
+	full_name,
+	email
+FROM
+	users
+WHERE
+    email = :email`
 
 const CountEmail = `
 SELECT 

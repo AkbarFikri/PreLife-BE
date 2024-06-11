@@ -10,7 +10,7 @@ type Error struct {
 	HttpCode int
 }
 
-func NewError(msg string, httpCode int) Error {
+func New(msg string, httpCode int) Error {
 	return Error{
 		Message:  msg,
 		HttpCode: httpCode,
@@ -28,14 +28,9 @@ var (
 )
 
 var (
-	ErrorGeneral         = NewError("internal server error", http.StatusInternalServerError)
-	ErrorBadRequest      = NewError("bad request", http.StatusBadRequest)
-	ErrorNotFound        = NewError(ErrNotFound.Error(), http.StatusNotFound)
-	ErrorUnauthorized    = NewError(ErrUnauthorized.Error(), http.StatusUnauthorized)
-	ErrorForbiddenAccess = NewError(ErrForbiddenAccess.Error(), http.StatusForbidden)
-
-	//Authentication
-	ErrorEmailAlreadyUsed       = NewError("email already used", http.StatusBadRequest)
-	ErrorInvalidEmailOrPassword = NewError("invalid email or password", http.StatusBadRequest)
-	ErrorInvalidAccessToken     = NewError("access token invalid or expire", http.StatusBadRequest)
+	ErrorGeneral         = New("internal server error", http.StatusInternalServerError)
+	ErrorBadRequest      = New("bad request", http.StatusBadRequest)
+	ErrorNotFound        = New(ErrNotFound.Error(), http.StatusNotFound)
+	ErrorUnauthorized    = New(ErrUnauthorized.Error(), http.StatusUnauthorized)
+	ErrorForbiddenAccess = New(ErrForbiddenAccess.Error(), http.StatusForbidden)
 )
