@@ -59,6 +59,9 @@ func (s userService) SaveUserIfNotExists(ctx context.Context, user domain.User) 
 	}
 
 	user.FullName = firebaseUser.DisplayName
+	if user.FullName == "" {
+		user.FullName = "default-name"
+	}
 	user.DateOfBirth = time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 	if err := s.UserRepository.Save(ctx, user); err != nil {
