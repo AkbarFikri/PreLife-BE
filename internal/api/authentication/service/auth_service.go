@@ -56,6 +56,9 @@ func (s authService) Register(ctx context.Context, req dto.AuthRequest) (dto.Aut
 	resClient, err := s.authClient.CreateUser(ctx, (&auth.UserToCreate{}).DisplayName(user.FullName).Email(req.Email).Password(req.Password))
 	if err != nil {
 		s.log.Errorf("error create user on firebase : %v", err)
+		if auth.IsEmailAlreadyExists(err) {
+			return dto.AuthResponse{}, ErrorEmailAlreadyUsed
+		}
 		return dto.AuthResponse{}, err
 	}
 
