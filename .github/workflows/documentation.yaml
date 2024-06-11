@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |-
-            api/swagger.yaml
+            api/docs.yaml
             public/dummy-logo.png
           sparse-checkout-cone-mode: false
       - name: 🐳 Run Container

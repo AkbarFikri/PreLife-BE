@@ -17,6 +17,7 @@ deploy:
 	echo "Start pulling from github repository...."
 	git pull origin main
 	echo "Start build golang executable file...."
+    export PATH=$PATH:/usr/local/go/bin
 	go build -o main cmd/app/main.go
 	echo "Restart service..."
 	systemctl restart prelife.service
