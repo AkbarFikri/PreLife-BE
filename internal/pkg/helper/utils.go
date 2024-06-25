@@ -1,16 +1,27 @@
 package helper
 
 import (
-	"firebase.google.com/go/v4/auth"
-	"github.com/AkbarFikri/PreLife-BE/internal/domain"
+	"crypto/rand"
+	"encoding/base64"
+	"github.com/AkbarFikri/PreLife-BE/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
-func UserDataFromToken(ctx *gin.Context) (domain.User, error) {
-	userToken, _ := ctx.Get("idToken")
-	token := userToken.(*auth.Token)
-	return domain.User{
-		ID:    token.UID,
-		Email: token.Claims["email"].(string),
-	}, nil
+func GenerateUID(length int) string {
+	randomBytes := make([]byte, length)
+
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		return ""
+	}
+
+	uid := base64.RawURLEncoding.EncodeToString(randomBytes)
+	return uid[:length]
+}
+
+func GetUserLoginData(c *gin.Context) dto.UserTokenData {
+	getUser, _ := c.Get("user")
+	user := getUser.(dto.UserTokenData)
+
+	return user
 }

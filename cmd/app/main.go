@@ -10,9 +10,9 @@ import (
 
 func main() {
 	err := godotenv.Load()
-	env := os.Getenv("ENV")
+	env := os.Getenv("API_KEY")
 	if err != nil && env == "" {
-		panic("Error loading .env file")
+		panic("Error loading .env file or API_KEY not provided")
 	}
 
 	logger := config.NewLogger()

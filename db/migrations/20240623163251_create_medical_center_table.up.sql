@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS medical_centers (
+    id VARCHAR NOT NULL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    facilitys_ids VARCHAR[] NOT NULL
+);

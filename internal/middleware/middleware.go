@@ -10,8 +10,8 @@ type Middleware struct {
 	log        *logrus.Logger
 }
 
-func New(client *auth.Client, log *logrus.Logger) *Middleware {
-	return &Middleware{
+func New(client *auth.Client, log *logrus.Logger) Middleware {
+	return Middleware{
 		authClient: client,
 		log:        log,
 	}

@@ -9,6 +9,7 @@ import (
 type AuthRepository interface {
 	Save(ctx context.Context, user domain.User) error
 	CountEmail(ctx context.Context, email string) (int, error)
+	FindUserProfileIdByUserId(ctx context.Context, userId string) (string, error)
 	FindUserByEmail(ctx context.Context, email string) (domain.User, error)
 }
 
@@ -26,6 +27,7 @@ func (r *authRepository) Save(ctx context.Context, user domain.User) error {
 		"email":         user.Email,
 		"full_name":     user.FullName,
 		"date_of_birth": user.DateOfBirth,
+		"role_id":       user.RoleId,
 	}
 
 	_, err := r.db.NamedExecContext(ctx, CreateUser, arg)
@@ -80,4 +82,28 @@ func (r *authRepository) FindUserByEmail(ctx context.Context, email string) (dom
 	}
 
 	return user, nil
+}
+
+func (r *authRepository) FindUserProfileIdByUserId(ctx context.Context, userId string) (string, error) {
+	arg := map[string]interface{}{
+		"user_id": userId,
+	}
+
+	query, args, err := sqlx.Named(GetUserByEmail, arg)
+	if err != nil {
+		return "", err
+	}
+
+	query, args, err = sqlx.In(query, args...)
+	if err != nil {
+		return "", err
+	}
+	query = r.db.Rebind(query)
+
+	var profileId string
+	if err := r.db.QueryRowxContext(ctx, query, args...).Scan(&profileId); err != nil {
+		return "", err
+	}
+
+	return profileId, nil
 }

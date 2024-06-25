@@ -4,12 +4,16 @@ import (
 	authHandler "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/handler"
 	authRepository "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/repository"
 	authService "github.com/AkbarFikri/PreLife-BE/internal/api/authentication/service"
+	chatbotHandler "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/handler"
+	chatbotRepository "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/repository"
+	chatbotService "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/service"
 	userHandler "github.com/AkbarFikri/PreLife-BE/internal/api/user/handler"
 	userRepository "github.com/AkbarFikri/PreLife-BE/internal/api/user/repository"
 	userService "github.com/AkbarFikri/PreLife-BE/internal/api/user/service"
 	"github.com/AkbarFikri/PreLife-BE/internal/middleware"
 	"github.com/AkbarFikri/PreLife-BE/internal/pkg/database"
 	firebase2 "github.com/AkbarFikri/PreLife-BE/internal/pkg/firebase"
+	"github.com/AkbarFikri/PreLife-BE/internal/pkg/gemini"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -32,8 +36,9 @@ func NewServer(app *gin.Engine, firebaseApp *firebase2.FirebaseClient, log *logr
 		log.Fatal("Unable connect to database")
 	}
 
-	// Firebase utils
+	// Third Party
 	firebaseAuth := firebaseApp.Auth()
+	geminiAi := gemini.New()
 
 	// Middleware
 	mid := middleware.New(firebaseAuth, log)
@@ -41,16 +46,19 @@ func NewServer(app *gin.Engine, firebaseApp *firebase2.FirebaseClient, log *logr
 	// Repository init
 	usRepository := userRepository.New(db)
 	atRepository := authRepository.New(db)
+	cbRepository := chatbotRepository.New(db)
 
 	// Service init
 	usService := userService.New(usRepository, log, firebaseAuth)
 	atService := authService.New(atRepository, log, firebaseAuth)
+	cbService := chatbotService.New(log, geminiAi, cbRepository)
 
 	// Handler init
 	atHandler := authHandler.New(atService)
 	usHandler := userHandler.New(mid, log, usService)
+	cbHandler := chatbotHandler.New(cbService, mid)
 
-	s.handlers = []Handler{usHandler, atHandler}
+	s.handlers = []Handler{usHandler, atHandler, cbHandler}
 
 	return s
 }

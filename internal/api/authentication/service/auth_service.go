@@ -51,6 +51,7 @@ func (s authService) Register(ctx context.Context, req dto.AuthRequest) (dto.Aut
 		Email:       req.Email,
 		FullName:    req.FullName,
 		DateOfBirth: dateBirth,
+		RoleId:      1,
 	}
 
 	resClient, err := s.authClient.CreateUser(ctx, (&auth.UserToCreate{}).DisplayName(user.FullName).Email(req.Email).Password(req.Password))
@@ -75,4 +76,14 @@ func (s authService) Register(ctx context.Context, req dto.AuthRequest) (dto.Aut
 		ID:          user.ID,
 		DateOfBirth: user.DateOfBirth.Format("02-01-2006"),
 	}, nil
+}
+
+func (s authService) RegisterPregnantProfile(ctx context.Context, req dto.RegisterProfilePregnantRequest) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s authService) RegisterNotPregnantProfile(ctx context.Context, req dto.RegisterProfileNotPregnantRequest) {
+	//TODO implement me
+	panic("implement me")
 }

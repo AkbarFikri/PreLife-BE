@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"github.com/AkbarFikri/PreLife-BE/internal/dto"
 	NewError "github.com/AkbarFikri/PreLife-BE/internal/pkg/error"
 	"github.com/AkbarFikri/PreLife-BE/internal/pkg/response"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
 
-func (m *Middleware) AuthJWT() gin.HandlerFunc {
+func (m Middleware) AuthJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.GetHeader("Authorization") == "" {
 			m.log.Warnf("request without authorization header detected : %v access to route %s", c.Request.RemoteAddr, c.Request.RequestURI)
@@ -31,7 +32,16 @@ func (m *Middleware) AuthJWT() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("idToken", idToken)
+		claims := idToken.Claims
+		user := dto.UserTokenData{
+			ID:          claims["id"].(string),
+			Email:       claims["email"].(string),
+			RoleId:      claims["role_id"].(float64),
+			ProfileId:   claims["profile_id"].(string),
+			ProfileType: claims["profile_type"].(float64),
+		}
+
+		c.Set("user", user)
 		c.Next()
 	}
 }

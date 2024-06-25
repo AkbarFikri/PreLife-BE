@@ -10,7 +10,6 @@ type Response struct {
 	Success  bool        `json:"success"`
 	Message  string      `json:"message"`
 	Payload  interface{} `json:"payload,omitempty"`
-	Error    string      `json:"error,omitempty"`
 }
 
 func New(params ...func(*Response) *Response) Response {
@@ -55,7 +54,7 @@ func WithError(err error) func(*Response) *Response {
 			myErr = NewError.ErrorGeneral
 		}
 
-		r.Error = myErr.Message
+		r.Message = myErr.Message
 		r.HttpCode = myErr.HttpCode
 
 		return r
