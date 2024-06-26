@@ -30,31 +30,31 @@ func New() *Gemini {
 	return &Gemini{model: model}
 }
 
-func (g *Gemini) PredictFoodNutritions(ctx context.Context, picture []byte) (dto.NutritionRequest, error) {
+func (g *Gemini) PredictFoodNutritions(ctx context.Context, picture []byte) (dto.GenerateNutritionsResponse, error) {
 	content, err := g.model.GenerateContent(ctx,
-		genai.Text("I am providing an image of a food item. Please analyze the image and provide a JSON response containing the following details: the name of the food, the number of calories it contains, the amount of carbohydrates (in grams), and the amount of protein (in grams)\n"),
-		genai.Text("Format the JSON response exactly like this example: {\"food_name\": \"Example Food Name\", \"calories\": 123, \"carbohydrates\": 45, \"protein\": 67}"),
+		genai.Text("I am providing an image of a food item. Please analyze the image and provide a JSON response containing the following details: the name of the food, the number of calories it contains, the amount of carbohydrates (in grams), the amount of protein (in grams), whether the food is recommended for pregnant women/children, and a very short description of the food with indonesia language. if its not food just set food_name to \\\"notfood\\\""),
+		genai.Text("Format the JSON response exactly like this example: {\"food_name\": \"Example Food Name\", \"calories\": 123, \"carbohydrates\": 45, \"protein\": 67, \"recommended_for_pregnant_children\": true, \"description\": \"A short description of the food\"}"),
 		genai.Text("Give me only the JSON output in one-line, without anything else"),
 		genai.ImageData("jpeg", picture),
 	)
 	if err != nil {
-		return dto.NutritionRequest{}, err
+		return dto.GenerateNutritionsResponse{}, err
 	}
 
 	part := content.Candidates[0].Content.Parts[0]
 	byteJson, err := json.Marshal(part)
 	if err != nil {
-		return dto.NutritionRequest{}, err
+		return dto.GenerateNutritionsResponse{}, err
 	}
 
 	strJson, err := strconv.Unquote(string(byteJson))
 	if err != nil {
-		return dto.NutritionRequest{}, err
+		return dto.GenerateNutritionsResponse{}, err
 	}
 
-	var res dto.NutritionRequest
+	var res dto.GenerateNutritionsResponse
 	if err := jsoniter.Unmarshal([]byte(strJson), &res); err != nil {
-		return dto.NutritionRequest{}, err
+		return dto.GenerateNutritionsResponse{}, err
 	}
 
 	return res, nil

@@ -7,6 +7,9 @@ import (
 	chatbotHandler "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/handler"
 	chatbotRepository "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/repository"
 	chatbotService "github.com/AkbarFikri/PreLife-BE/internal/api/chatbot/service"
+	nutritionHandler "github.com/AkbarFikri/PreLife-BE/internal/api/nutritions/handler"
+	nutritionRepository "github.com/AkbarFikri/PreLife-BE/internal/api/nutritions/repository"
+	nutritionsService "github.com/AkbarFikri/PreLife-BE/internal/api/nutritions/service"
 	userHandler "github.com/AkbarFikri/PreLife-BE/internal/api/user/handler"
 	userRepository "github.com/AkbarFikri/PreLife-BE/internal/api/user/repository"
 	userService "github.com/AkbarFikri/PreLife-BE/internal/api/user/service"
@@ -38,6 +41,7 @@ func NewServer(app *gin.Engine, firebaseApp *firebase2.FirebaseClient, log *logr
 
 	// Third Party
 	firebaseAuth := firebaseApp.Auth()
+	firebaseStorage := firebaseApp.Storage()
 	geminiAi := gemini.New()
 
 	// Middleware
@@ -47,18 +51,21 @@ func NewServer(app *gin.Engine, firebaseApp *firebase2.FirebaseClient, log *logr
 	usRepository := userRepository.New(db)
 	atRepository := authRepository.New(db)
 	cbRepository := chatbotRepository.New(db)
+	ntRepository := nutritionRepository.New(db)
 
 	// Service init
 	usService := userService.New(usRepository, log, firebaseAuth)
 	atService := authService.New(atRepository, log, firebaseAuth)
 	cbService := chatbotService.New(log, geminiAi, cbRepository)
+	ntService := nutritionsService.New(log, ntRepository, geminiAi, firebaseStorage)
 
 	// Handler init
 	atHandler := authHandler.New(atService)
 	usHandler := userHandler.New(mid, log, usService)
 	cbHandler := chatbotHandler.New(cbService, mid)
+	ntHandler := nutritionHandler.New(ntService, mid)
 
-	s.handlers = []Handler{usHandler, atHandler, cbHandler}
+	s.handlers = []Handler{usHandler, atHandler, cbHandler, ntHandler}
 
 	return s
 }

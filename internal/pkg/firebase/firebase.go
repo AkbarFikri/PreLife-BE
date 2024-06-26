@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -12,8 +13,9 @@ import (
 )
 
 type FirebaseClient struct {
-	app *firebase.App
-	log *logrus.Logger
+	app     *firebase.App
+	storage FirebaseStorage
+	log     *logrus.Logger
 }
 
 func Init(log *logrus.Logger) (*FirebaseClient, error) {
@@ -38,10 +40,14 @@ func Init(log *logrus.Logger) (*FirebaseClient, error) {
 	}
 
 	opt := option.WithCredentialsJSON(credential)
-	firebaseApp, err := firebase.NewApp(context.Background(), nil, opt)
+	config := &firebase.Config{
+		StorageBucket: fmt.Sprintf("%s.appspot.com", os.Getenv("FIREBASE_BUCKET_NAME")),
+	}
+	firebaseApp, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {
 		log.Fatalf("error initializing Firebase app: %v", err)
 	}
+
 	return &FirebaseClient{app: firebaseApp, log: log}, nil
 }
 
@@ -51,4 +57,13 @@ func (f *FirebaseClient) Auth() *auth.Client {
 		f.log.Fatal(err)
 	}
 	return client
+}
+
+func (f *FirebaseClient) Storage() FirebaseStorage {
+	client, err := f.app.Storage(context.Background())
+	if err != nil {
+		f.log.Fatal(err)
+	}
+
+	return NewFirebaseStorage(client, f.log)
 }
