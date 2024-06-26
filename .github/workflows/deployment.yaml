@@ -2,11 +2,11 @@ name: 🎯 Build and deploy apps to server
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - internal/
       - cmd/
-      - Makefile
+      - .github/workflows/deployment.yaml
 
 jobs:
   build:
