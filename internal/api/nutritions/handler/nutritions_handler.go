@@ -26,9 +26,10 @@ func New(ns nutritionsService.NutritionService, mid middleware.Middleware) *Nutr
 }
 
 func (h *NutritionHandler) Endpoints(s *gin.RouterGroup) {
-	chat := s.Group("/nutritions", h.Middleware.AuthJWT())
-	chat.POST("/generate", h.generateNutritionsPredict)
-	chat.POST("/", h.storeNutritions)
+	nutritions := s.Group("/nutritions", h.Middleware.AuthJWT())
+	nutritions.POST("/generate", h.generateNutritionsPredict)
+	nutritions.POST("/", h.storeNutritions)
+	nutritions.GET("/", h.currentNutritions)
 }
 
 func (h *NutritionHandler) generateNutritionsPredict(ctx *gin.Context) {
@@ -80,5 +81,24 @@ func (h *NutritionHandler) storeNutritions(ctx *gin.Context) {
 		response.WithPayload(payload),
 		response.WithMessage("successfully stored profile nutritions"),
 		response.WithHttpCode(http.StatusCreated),
+	).Send(ctx)
+}
+
+func (h *NutritionHandler) currentNutritions(ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
+
+	user := helper.GetUserLoginData(ctx)
+
+	payload, err := h.NutritionService.CurrentNutritions(c, user)
+	if err != nil {
+		response.New(response.WithError(err)).Send(ctx)
+		return
+	}
+
+	response.New(
+		response.WithPayload(payload),
+		response.WithMessage("successfully calculate current user nutritions"),
+		response.WithHttpCode(http.StatusOK),
 	).Send(ctx)
 }

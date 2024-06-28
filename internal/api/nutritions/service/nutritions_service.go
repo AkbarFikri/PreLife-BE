@@ -1,6 +1,8 @@
 package nutritionsService
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	nutritionRepository "github.com/AkbarFikri/PreLife-BE/internal/api/nutritions/repository"
 	"github.com/AkbarFikri/PreLife-BE/internal/domain"
@@ -17,6 +19,7 @@ import (
 type NutritionService interface {
 	GeneratePredict(context.Context, dto.UserTokenData, dto.GenerateNutritionRequest) (dto.GenerateNutritionsResponse, error)
 	StoreNutritions(context.Context, dto.UserTokenData, dto.NutritionsRequest) (dto.NutritionsResponse, error)
+	CurrentNutritions(ctx context.Context, data dto.UserTokenData) (dto.CurrentNutritionsResponse, error)
 }
 
 type nutritionService struct {
@@ -105,4 +108,42 @@ func (s nutritionService) StoreNutritions(c context.Context, user dto.UserTokenD
 		PictureLink: nutritions.PictureLink,
 		FoodName:    nutritions.FoodName,
 	}, nil
+}
+
+func (s nutritionService) CurrentNutritions(ctx context.Context, request dto.UserTokenData) (dto.CurrentNutritionsResponse, error) {
+	nutritionsHistory, err := s.NutritionRepository.GetCurrentDateHistory(ctx, request.ProfileId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+		} else {
+			s.log.Errorf("error when getting current nutritions history : %v", err)
+			return dto.CurrentNutritionsResponse{}, err
+		}
+	}
+
+	var res dto.CurrentNutritionsResponse
+
+	if len(nutritionsHistory) == 0 {
+		res.CurrentCarbohydrates = 0
+		res.CurrentCalories = 0
+		res.CurrentProtein = 0
+	} else {
+		for _, nutrition := range nutritionsHistory {
+			res.CurrentCarbohydrates += nutrition.Carbohydrate
+			res.CurrentCalories += nutrition.Calories
+			res.CurrentProtein += nutrition.Protein
+		}
+	}
+
+	switch request.ProfileType {
+	case PregnantProfile:
+		res.MaxCalories = 2550
+		res.MaxCarbohydrates = 350
+		res.MaxProtein = 100
+	case NonPregnantProfile:
+		res.MaxCalories = 2550
+		res.MaxCarbohydrates = 350
+		res.MaxProtein = 100
+	}
+
+	return res, nil
 }

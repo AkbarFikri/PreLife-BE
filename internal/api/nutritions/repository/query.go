@@ -21,3 +21,15 @@ INSERT INTO
 	       :picture_link,
 	       :created_at
 )`
+
+const FindNutritionsInCurrentDateByProfileId = `
+SELECT
+	id,
+	user_profile_id,
+	calories,
+	carbohydrate,
+	protein
+FROM
+	nutritions
+WHERE
+    DATE(created_at) = CURRENT_DATE AND user_profile_id = :user_profile_id`

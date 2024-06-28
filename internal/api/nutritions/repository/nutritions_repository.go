@@ -8,6 +8,7 @@ import (
 
 type NutritionRepository interface {
 	Save(ctx context.Context, data domain.Nutrition) error
+	GetCurrentDateHistory(ctx context.Context, profileId string) ([]domain.Nutrition, error)
 }
 
 type nutritionRepository struct {
@@ -35,4 +36,37 @@ func (r nutritionRepository) Save(ctx context.Context, data domain.Nutrition) er
 		return err
 	}
 	return nil
+}
+
+func (r nutritionRepository) GetCurrentDateHistory(ctx context.Context, profileId string) ([]domain.Nutrition, error) {
+	arg := map[string]interface{}{
+		"user_profile_id": profileId,
+	}
+
+	query, args, err := sqlx.Named(FindNutritionsInCurrentDateByProfileId, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	query, args, err = sqlx.In(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+
+	rows, err := r.db.QueryxContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var nutritionsHistory []domain.Nutrition
+	for rows.Next() {
+		var nutrition domain.Nutrition
+		if err := rows.StructScan(&nutrition); err != nil {
+			return nutritionsHistory, err
+		}
+		nutritionsHistory = append(nutritionsHistory, nutrition)
+	}
+
+	return nutritionsHistory, nil
 }

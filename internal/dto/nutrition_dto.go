@@ -28,3 +28,12 @@ type NutritionsResponse struct {
 	FoodName    string `json:"food_name"`
 	PictureLink string `json:"picture_link"`
 }
+
+type CurrentNutritionsResponse struct {
+	CurrentCalories      float64 `json:"current_calories"`
+	CurrentCarbohydrates float64 `json:"current_carbohydrates"`
+	CurrentProtein       float64 `json:"current_protein"`
+	MaxProtein           float64 `json:"max_protein"`
+	MaxCarbohydrates     float64 `json:"max_carbohydrates"`
+	MaxCalories          float64 `json:"max_calories"`
+}
